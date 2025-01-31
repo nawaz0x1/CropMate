@@ -1,7 +1,6 @@
 import sys
 import os
 import logging
-import shap
 import pandas as pd
 import numpy as np
 import streamlit as st
