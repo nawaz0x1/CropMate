@@ -1,10 +1,68 @@
+import os
 import pandas as pd
+import logging
+from typing import Tuple
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+DEFAULT_FEATURES = ["N", "P", "K", "ph"]
+DEFAULT_TARGET = "crop"
 
 def load_data(filepath: str) -> pd.DataFrame:
-    """Load dataset from a CSV file."""
-    return pd.read_csv(filepath)
+    """
+    Load dataset from a CSV file.
 
-def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Preprocess the dataset (e.g., missing values, encoding)."""
-    df = df.dropna()  # Example preprocessing
-    return df
+    Args:
+        filepath (str): Path to the CSV file.
+
+    Returns:
+        pd.DataFrame: Loaded dataset.
+    """
+    try:
+        if not os.path.exists(filepath):
+            logging.error(f"File not found: {filepath}")
+            raise FileNotFoundError(f"File not found: {filepath}")
+
+        logging.info(f"Loading data from {filepath}...")
+        df = pd.read_csv(filepath)
+        logging.info("Data loaded successfully.")
+        return df
+
+    except Exception as e:
+        logging.error(f"Error loading data: {e}", exc_info=True)
+        raise
+
+def preprocess_data(df: pd.DataFrame, features: list = DEFAULT_FEATURES, target: str = DEFAULT_TARGET) -> Tuple[pd.DataFrame, pd.Series]:
+    """
+    Preprocess the dataset: remove NaNs, extract features and target.
+
+    Args:
+        df (pd.DataFrame): The input dataset.
+        features (list): List of feature column names.
+        target (str): The target column name.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.Series]: Processed feature matrix (X) and target vector (y).
+    """
+    try:
+        logging.info("Preprocessing data...")
+
+        # Ensure required columns exist
+        missing_cols = [col for col in features + [target] if col not in df.columns]
+        if missing_cols:
+            logging.error(f"Missing required columns: {missing_cols}")
+            raise ValueError(f"Missing required columns: {missing_cols}")
+
+        # Drop missing values
+        df = df.dropna()
+
+        X = df[features]
+        y = df[target]
+
+        logging.info("Data preprocessing completed successfully.")
+        return X, y
+
+    except Exception as e:
+        logging.error(f"Error preprocessing data: {e}", exc_info=True)
+        raise
