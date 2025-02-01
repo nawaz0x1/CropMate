@@ -1,21 +1,23 @@
 import sys
 import os
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import logging
-import pandas as pd
-import numpy as np
 import streamlit as st
-from src.utils import load_model
-
+from src.utils import load_model, predict_crop
 
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    filename="log.log",
+    filemode="w",
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
 # Page title
-st.title("🌾 Crop Recommendation System")
+st.title("🌾 AI Crop Recommendation")
 
 # Crop emoji dictionary for display
 emoji_dict = {
@@ -41,41 +43,44 @@ emoji_dict = {
     "watermelon": "🍉",
 }
 
-def predict_crop(model, N, P, K, ph):
-    """Function to predict the crop based on input soil nutrients."""
-    try:
-        input_data = pd.DataFrame([[N, P, K, ph]], columns=["N", "P", "K", "ph"])
-        probabilities = model.predict_proba(input_data)
-        
-        crop_index = probabilities[0].argmax()
-        crop = model.classes_[crop_index]
-        probability = probabilities[0][crop_index]
-
-        logger.info(f"Prediction successful. Crop: {crop}, Probability: {probability:.2f}")
-        return crop, probability
-    except Exception as e:
-        logger.error(f"Error in predicting crop: {str(e)}")
-        raise RuntimeError("Error during crop prediction.")
 
 # Load the trained model
 try:
     model = load_model()
-    logger.info("Model loaded successfully.")
+    logging.info("Model loaded successfully.")
 except Exception as e:
-    logger.error(f"Error loading model: {str(e)}")
+    logging.error(f"Error loading model: {str(e)}")
     st.error("Failed to load the model. Please try again later.")
 
 # User input for crop recommendation
-N = st.number_input("Nitrogen (N)", min_value=0.0, max_value=100.0, step=0.1)
-P = st.number_input("Phosphorus (P)", min_value=0.0, max_value=100.0, step=0.1)
-K = st.number_input("Potassium (K)", min_value=0.0, max_value=100.0, step=0.1)
-ph = st.number_input("pH Value", min_value=0.0, max_value=14.0, step=0.1)
+nitrogen = st.number_input(
+    "Nitrogen (N) Content (mg/kg)", min_value=0.0, max_value=150.0, value=70.0, step=1.0
+)
+phosphorus = st.number_input(
+    "Phosphorus (P) Content (mg/kg)",
+    min_value=0.0,
+    max_value=150.0,
+    value=50.0,
+    step=1.0,
+)
+potassium = st.number_input(
+    "Potassium (K) Content (mg/kg)",
+    min_value=0.0,
+    max_value=150.0,
+    value=20.0,
+    step=1.0,
+)
+soil_ph = st.number_input(
+    "Soil Acidity (pH Level)", min_value=0.0, max_value=14.0, value=6.5, step=0.1
+)
 
 # Handle recommendation button click
 if st.button("Recommend Crop"):
     try:
-        logger.info("Recommendation button clicked.")
-        crop, probability = predict_crop(model, N, P, K, ph)
+        logging.info("Recommendation button clicked.")
+        crop, probability = predict_crop(
+            model=model, n=nitrogen, p=phosphorus, k=potassium, ph=soil_ph
+        )
 
         # Display the results
         if crop in emoji_dict:
@@ -86,5 +91,5 @@ if st.button("Recommend Crop"):
         st.write(f"Probability: {probability:.2f}")
 
     except Exception as e:
-        logger.error(f"Error during recommendation: {str(e)}")
+        logging.error(f"Error during recommendation: {str(e)}")
         st.error(f"An error occurred during crop recommendation: {str(e)}")

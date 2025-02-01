@@ -1,15 +1,9 @@
-import pandas as pd
 import streamlit as st
 import logging
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.data_loader import load_data, preprocess_data
+from src.data_loader import load_data
 
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
 
 # Crop emoji dictionary
 emoji_dict = {
@@ -40,7 +34,7 @@ st.title("🌾 Crop Data Analysis")
 
 try:
     df = load_data("data/soil_measures.csv")
-    logger.info("Dataset loaded successfully.")
+
     # Check if the required columns are present
     required_columns = ["N", "P", "K", "ph", "crop"]
     if not all(col in df.columns for col in required_columns):
@@ -53,11 +47,13 @@ try:
         selected_crop = st.selectbox("Select Crop", crops)
 
         crop_data = df[df["crop"] == selected_crop]
+
         # Show average N, P, K, ph for the selected crop
         avg_values = crop_data[["N", "P", "K", "ph"]].mean()
         st.subheader(
             f"Average Nutrient Values for {selected_crop.title()} {emoji_dict.get(selected_crop, '🫘')}:"
         )
+
         st.write(f"Nitrogen (N): {avg_values['N']:.2f}")
         st.write(f"Phosphorus (P): {avg_values['P']:.2f}")
         st.write(f"Potassium (K): {avg_values['K']:.2f}")
@@ -80,6 +76,7 @@ try:
 
         plt.tight_layout()
         st.pyplot(fig)
+
 except Exception as e:
-    logger.error(f"Error loading or processing file: {str(e)}")
+    logging.error(f"Error loading or processing file: {str(e)}")
     st.error(f"An error occurred: {str(e)}")

@@ -6,11 +6,6 @@ from src.data_loader import load_data, preprocess_data
 from src.utils import save_model
 from typing import Optional, Union
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
 
 def train_model(
     X: Union[pd.DataFrame, np.ndarray], y: Union[pd.Series, np.ndarray]
@@ -64,5 +59,3 @@ def training_pipeline(df: Optional[pd.DataFrame] = None) -> None:
     except Exception as e:
         logging.error(f"Training pipeline failed: {e}", exc_info=True)
         raise
-
-

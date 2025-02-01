@@ -1,14 +1,15 @@
 import os
-import pandas as pd
 import logging
+import pandas as pd
+import streamlit as st
 from typing import Tuple
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 DEFAULT_FEATURES = ["N", "P", "K", "ph"]
 DEFAULT_TARGET = "crop"
 
+
+@st.cache_resource
 def load_data(filepath: str) -> pd.DataFrame:
     """
     Load dataset from a CSV file.
@@ -33,7 +34,10 @@ def load_data(filepath: str) -> pd.DataFrame:
         logging.error(f"Error loading data: {e}", exc_info=True)
         raise
 
-def preprocess_data(df: pd.DataFrame, features: list = DEFAULT_FEATURES, target: str = DEFAULT_TARGET) -> Tuple[pd.DataFrame, pd.Series]:
+
+def preprocess_data(
+    df: pd.DataFrame, features: list = DEFAULT_FEATURES, target: str = DEFAULT_TARGET
+) -> Tuple[pd.DataFrame, pd.Series]:
     """
     Preprocess the dataset: remove NaNs, extract features and target.
 
