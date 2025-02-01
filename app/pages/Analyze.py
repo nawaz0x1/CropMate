@@ -3,6 +3,7 @@ import logging
 import matplotlib.pyplot as plt
 import seaborn as sns
 from src.data_loader import load_data
+from components.sidebar import menubar
 
 
 # Crop emoji dictionary
@@ -29,6 +30,7 @@ emoji_dict = {
     "watermelon": "🍉",
 }
 
+menubar()
 st.title("🌾 Crop Data Analysis")
 
 

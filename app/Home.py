@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 import logging
 import streamlit as st
 from src.utils import load_model, predict_crop
+from components.sidebar import menubar
 
 
 # Set up logging
@@ -16,6 +17,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
+menubar()
 # Page title
 st.title("🌾 AI Crop Recommendation")
 

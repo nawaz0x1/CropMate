@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import logging
 from src.model import training_pipeline
+from components.sidebar import menubar
 
+menubar()
 st.title("Train on New Data")
 
 # File uploader
