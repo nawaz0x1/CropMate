@@ -47,7 +47,6 @@ emoji_dict = {
 # Load the trained model
 try:
     model = load_model()
-    logging.info("Model loaded successfully.")
 except Exception as e:
     logging.error(f"Error loading model: {str(e)}")
     st.error("Failed to load the model. Please try again later.")
