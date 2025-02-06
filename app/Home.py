@@ -17,6 +17,8 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
+st.set_page_config(page_title="CropMateAI", page_icon="🌿")
+
 menubar()
 # Page title
 st.title("🌾 AI Crop Recommendation")
